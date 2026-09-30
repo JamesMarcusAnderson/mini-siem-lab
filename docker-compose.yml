@@ -1,0 +1,79 @@
+# Mini-SIEM lab — Graylog stack
+#
+# Graylog 6.1 + MongoDB 7.0 + OpenSearch 2.15 (single node).
+# Graylog 6.x requires MongoDB 6/7 and OpenSearch 2.x — these versions are
+# mutually compatible. OpenSearch runs with its security plugin disabled
+# because this is a LAB; never expose it to an untrusted network.
+#
+# Default web login: admin / admin  (CHANGE the password for anything
+# beyond your own lab machine.)
+#
+# Usage:
+#   docker compose up -d
+#   # open http://127.0.0.1:9000  -> System -> Inputs -> launch Syslog UDP/TCP (see graylog/inputs.md)
+#   python3 scripts/send-test-syslog.py --host 127.0.0.1
+
+services:
+  mongodb:
+    image: mongo:7.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - graylog
+    restart: unless-stopped
+
+  opensearch:
+    image: opensearchproject/opensearch:2.15.0
+    environment:
+      - cluster.name=graylog
+      - discovery.type=single-node
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - plugins.security.disabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - os_data:/usr/share/opensearch/data
+    networks:
+      - graylog
+    restart: unless-stopped
+
+  graylog:
+    image: graylog/graylog:6.1
+    depends_on:
+      - mongodb
+      - opensearch
+    # wait-for-it keeps Graylog from starting before OpenSearch is listening
+    entrypoint: /usr/bin/tini -- wait-for-it opensearch:9200 -- /docker-entrypoint.sh
+    environment:
+      # CHANGE ME for anything beyond a local lab (min 16 chars).
+      - GRAYLOG_PASSWORD_SECRET=lab-only-change-me-minimum-sixteen-chars!!
+      # sha256 of "admin". Set your own with:  echo -n 'yourpassword' | sha256sum
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+      - GRAYLOG_MONGODB_URI=mongodb://mongodb:27017/graylog
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://opensearch:9200
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    ports:
+      - "9000:9000"       # Web UI + REST API
+      - "1514:1514/udp"   # Syslog UDP input (see graylog/inputs.md)
+      - "1514:1514/tcp"   # Syslog TCP input
+      - "12201:12201/udp" # GELF UDP (optional)
+    networks:
+      - graylog
+    restart: unless-stopped
+
+networks:
+  graylog:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  os_data:
+  graylog_data:
