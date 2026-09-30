@@ -15,7 +15,7 @@ cannot bind port 514).
    - **Title:** `Syslog UDP`
    - **Bind address:** `0.0.0.0`
    - **Port:** `1514`
-   - **Receive Buffer Size:** `262144` (default)
+   - **Receive Buffer Size:** `262144`
    - **Allow overriding date:** checked (lets the sender's timestamp win)
    - **Store full message:** checked (keeps the raw line in `full_message`)
 5. Click **Launch input**. The input appears in the list with a green
