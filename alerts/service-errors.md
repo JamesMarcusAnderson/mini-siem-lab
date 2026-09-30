@@ -19,7 +19,7 @@
 
 ```
 Error spike: ${event.fields.application_name} on ${event.fields.source}
-logged ${event.fields.count} severity 0-3 messages in 5 minutes.
+logged 25+ severity 0-3 messages in 5 minutes.
 Open the service-errors saved search scoped to that host and check
 whether it is one repeated error or many different ones.
 ```
