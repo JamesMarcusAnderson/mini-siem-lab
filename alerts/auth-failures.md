@@ -19,7 +19,7 @@
 ## Notification text (suggestion)
 
 ```
-Possible brute-force logins on ${event.fields.source}: ${event.fields.count}
+Possible brute-force logins on ${event.fields.source}: more than 10
 failed SSH passwords in 5 minutes. Check whether the source IPs are
 known scanners or internal hosts, then block / rotate credentials.
 ```
