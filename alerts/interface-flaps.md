@@ -18,7 +18,7 @@
 ## Notification text (suggestion)
 
 ```
-Interface flapping on ${event.fields.source}: ${event.fields.count}
+Interface flapping on ${event.fields.source}: more than 4
 up/down transitions in 10 minutes. Check the physical layer (cable,
 SFP, patch panel) and the peer device before assuming a config issue.
 ```
