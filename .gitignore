@@ -1,0 +1,5 @@
+# Local-only
+.env
+
+# Editor / OS noise
+.DS_Store

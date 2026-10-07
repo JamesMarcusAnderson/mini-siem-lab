@@ -8,6 +8,10 @@ Graylog, write searches that find the four failure patterns every NOC
 watches for, alert on *rates* instead of single lines, and know how to
 tell a real incident from noise.
 
+Built as a working detection lab, not a dashboard demo: the stack is
+defined as code, every search ships with real query syntax and a written
+rationale, and every alert has a documented threshold with tuning guidance.
+
 ## Architecture
 
 ```
@@ -21,6 +25,12 @@ network devices / linux hosts
         ├──▶ saved searches: auth failures · restarts · flaps · service errors
         └──▶ event alerts: rate-based thresholds per host
 ```
+
+## Prerequisites
+
+- Docker Engine with the Compose plugin (`docker compose`)
+- ~4 GB of free RAM (the OpenSearch single node is the hungry one)
+- Python 3 (standard library only) for the synthetic traffic generator
 
 ## What's in here
 
